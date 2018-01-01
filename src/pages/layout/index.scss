@@ -1,7 +1,8 @@
 .main {
+    height: 100%;
     .nav,
     .container {
-        display: inline-block;
+        float: left;
         height: 100%;
     }
     .nav {
@@ -10,5 +11,6 @@
     }
     .container {
         width: calc(100% - 256px);
+        padding: 20px;
     }
 }

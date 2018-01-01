@@ -1,7 +1,7 @@
 import React from 'react';
 import {Menu, Icon} from 'antd';
 import {Link} from 'react-router-dom';
-import './index.css';
+import './index.scss';
 
 export default class Layout extends React.Component {
     constructor(props) {
@@ -13,7 +13,7 @@ export default class Layout extends React.Component {
         return (
             <div className="main">
                 <div className="nav">
-                    <Menu>
+                    <Menu style={{height: '100%'}}>
                         <Menu.Item key="1">
                             <Link to="/">
                                 <Icon type="calendar" />
@@ -31,6 +31,7 @@ export default class Layout extends React.Component {
                 <div className="container">
                     {this.props.children}
                 </div>
+                <p className="clearfix"></p>
             </div>
         );
     }

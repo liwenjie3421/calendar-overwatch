@@ -8,7 +8,7 @@ export default [
         exact: true
     },
     {
-        path: '/search',
+        path: '/',
         component: Search,
         exact: true
     }
