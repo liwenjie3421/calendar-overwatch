@@ -13,7 +13,8 @@ export default class Serach extends React.Component {
         if(!date) {
             return;
         }
-        const start = `${dateString}`;        
+        const start = `${dateString}`;
+        console.log(start);    
     }
 
     render() {
@@ -21,8 +22,11 @@ export default class Serach extends React.Component {
             <div>
                 <Row>
                     <Col push={6}>
-                        <MonthPicker onChange={this.handleChangeMonth}  format={'YYYY/MM'} />
+                        <MonthPicker onChange={this.handleChangeMonth}  format={'YYYY-MM-01'} />
                     </Col>
+                </Row>
+                <Row>
+                    
                 </Row>
             </div>
         );
