@@ -1,5 +1,5 @@
 import React from 'react';
-import { Input, Button, Col, Row, DatePicker } from 'antd';
+import { Input, Button, Col, Row, DatePicker, message } from 'antd';
 import axios from 'axios';
 
 const { MonthPicker } = DatePicker;
@@ -15,6 +15,12 @@ export default class Insert extends React.Component {
             monthPicker: this.state.start,
             type: 'save',
             info: this.state.input
+        }).then(v=>{
+            const {status, data} = v;
+            if(status === 200 && data && data.content) {
+                message.success('添加成功');
+            }
+            console.log(v)
         })
     }
 

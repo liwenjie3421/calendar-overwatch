@@ -1,7 +1,9 @@
 import React from 'react';
-import { DatePicker, Row, Col } from 'antd';
+import { Calendar, Alert } from 'antd';
+import axios from 'axios';
+import moment from 'moment';
 
-const { MonthPicker } = DatePicker;
+
 export default class Serach extends React.Component {
     constructor(props) {
         super(props);
@@ -9,25 +11,54 @@ export default class Serach extends React.Component {
         this.state = {};
     }
 
-    handleChangeMonth = (date, dateString) => {
-        if(!date) {
+    componentWillMount() {
+        this.post();
+    }
+
+    post(date=moment()) {
+        return axios.post('http://localhost:7001/calendarInfo', {
+            monthPicker : date.format('YYYY-MM-01'),
+            type: 'get'
+        }).then(v => {
+            const {status, data} = v;
+            if (status === 200 && data && data.content) {
+                const daysArr = data
+                    .content
+                    .split(',');
+                const daysNum = date.daysInMonth();
+                this.setState({
+                    daysNum,
+                    daysArr,
+                    month: date.month()
+                });
+            }
+        })
+    }
+
+    onPanelChange = (date) => {
+        if (!date) {
             return;
         }
-        const start = `${dateString}`;
-        console.log(start);    
+
+        this.post(date);
+    }
+
+    dateCellRender = (value) => {
+        if(value.month() === this.state.month) {
+            return this.state.daysArr[value.date()-1];
+        }
     }
 
     render() {
         return (
             <div>
-                <Row>
-                    <Col push={6}>
-                        <MonthPicker onChange={this.handleChangeMonth}  format={'YYYY-MM-01'} />
-                    </Col>
-                </Row>
-                <Row>
-                    
-                </Row>
+                {/* <Alert
+                    message={`You selected date: ${selectedValue && selectedValue.format('YYYY-MM-DD')}`}/> */}
+                <Calendar
+                    onSelect={this.onSelect}
+                    onPanelChange={this.onPanelChange}
+                    onSelect={this.onPanelChange}
+                    dateCellRender={this.dateCellRender} />
             </div>
         );
     }
