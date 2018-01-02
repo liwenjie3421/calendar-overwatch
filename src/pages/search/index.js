@@ -2,7 +2,7 @@ import React from 'react';
 import { Calendar, Alert } from 'antd';
 import axios from 'axios';
 import moment from 'moment';
-
+import {domain} from '../../config';
 
 export default class Serach extends React.Component {
     constructor(props) {
@@ -16,7 +16,7 @@ export default class Serach extends React.Component {
     }
 
     post(date=moment()) {
-        return axios.post('http://localhost:7001/calendarInfo', {
+        return axios.post(`${domain}/calendarInfo`, {
             monthPicker : date.format('YYYY-MM-01'),
             type: 'get'
         }).then(v => {

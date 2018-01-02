@@ -1,6 +1,7 @@
 import React from 'react';
 import { Input, Button, Col, Row, DatePicker, message } from 'antd';
 import axios from 'axios';
+import {domain} from '../../config';
 
 const { MonthPicker } = DatePicker;
 
@@ -11,7 +12,7 @@ export default class Insert extends React.Component {
     }
 
     handleClick() {
-        axios.post('http://localhost:7001/calendarInfo', {
+        axios.post(`${domain}/calendarInfo`, {
             monthPicker: this.state.start,
             type: 'save',
             info: this.state.input
