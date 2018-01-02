@@ -19,6 +19,8 @@ export default class Insert extends React.Component {
             const {status, data} = v;
             if(status === 200 && data && data.content) {
                 message.success('添加成功');
+            } else {
+                message.error(`失败： ${data.error}`);
             }
             console.log(v)
         })
