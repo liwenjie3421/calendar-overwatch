@@ -1,1 +1,1 @@
-export const domain = 'https://wxxcx.xn--2brq06crqr.xn--6qq986b3xl';
+export const domain = 'https://xn--2brq06crqr.xn--6qq986b3xl/api';
