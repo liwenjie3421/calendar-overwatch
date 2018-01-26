@@ -18,10 +18,12 @@ export default class Insert extends React.Component {
     }
 
     handleClick() {
+        const {start: monthPicker, tutorInfo, input: info} = this.state;
         axios.post(`${domain}/calendarInfo`, {
-            monthPicker: this.state.start,
+            monthPicker,
             type: 'save',
-            info: this.state.input
+            info,
+            tutorInfo
         }).then(v=>{
             const {status, data} = v;
             if(status === 200 && data && data.content) {
@@ -42,11 +44,7 @@ export default class Insert extends React.Component {
             start
         });
     }
-    // handleChange = (e) => {
-    //     this.setState({
-    //         input: e.target.value
-    //     });
-    // }
+
     handlePasteTutorInfo = (e) => {
         const dom = e.clipboardData.getData('text/html');
         const container = document.createElement('div');
