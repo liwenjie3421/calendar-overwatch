@@ -19,11 +19,15 @@ export default class Insert extends React.Component {
 
     handleClick() {
         const {start: monthPicker, tutorInfo, input: info} = this.state;
+        if (!(monthPicker && tutorInfo && info)) {
+            message.warning('有值为空');
+            return;
+        }
         axios.post(`${domain}/calendarInfo`, {
             monthPicker,
             type: 'save',
             info,
-            tutorInfo
+            tutorInfo: tutorInfo.split('\n')
         }).then(v=>{
             const {status, data} = v;
             if(status === 200 && data && data.content) {
@@ -142,11 +146,16 @@ export default class Insert extends React.Component {
                         })()}/>
                     </Col>
                 </Row>
+                <br/>
                 <Row>
-                    <Col push={6}>
+                    <Col span={6}>
+                        选择日期：
+                    </Col>
+                    <Col push={18}>
                         <MonthPicker onChange={(date, dateString)=>{this.handleChangeMonth(date, dateString)}}  format={'YYYY-MM-01'} />
                     </Col>
                 </Row>
+                <br/>
                 <Row>
                     <Col>
                         <Button onClick={()=>{this.handleClick()}}>submit</Button>
