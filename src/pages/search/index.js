@@ -1,5 +1,5 @@
 import React from 'react';
-import { Calendar, Alert } from 'antd';
+import { Calendar } from 'antd';
 import axios from 'axios';
 import moment from 'moment';
 import {domain} from '../../config';
@@ -22,11 +22,10 @@ export default class Serach extends React.Component {
         }).then(v => {
             const {status, data} = v;
             if (status === 200 && data && data.content) {
-                const daysArr = data
-                    .content
-                    .split(',');
+                const {info: daysArr, tutorMap} = data.content;
                 const daysNum = date.daysInMonth();
                 this.setState({
+                    tutorMap,
                     daysNum,
                     daysArr,
                     month: date.month()
@@ -45,15 +44,40 @@ export default class Serach extends React.Component {
 
     dateCellRender = (value) => {
         if(value.month() === this.state.month) {
-            return this.state.daysArr[value.date()-1];
+            const obj = this.state.daysArr[value.date()-1];
+            const {color, item} = obj;
+            return (
+                <div style={{
+                    background: `#${color}`,
+                    width: '80%',
+                    height: '80%'
+                }}>
+                    {item}
+                </div>
+            );
         }
     }
 
     render() {
+        const {tutorMap} = this.state;
+        const dataSource = [];
+        for(let color in tutorMap) {
+            const title = tutorMap[color];
+            dataSource.push({
+                title,
+                color
+            })
+        }
         return (
             <div>
-                {/* <Alert
-                    message={`You selected date: ${selectedValue && selectedValue.format('YYYY-MM-DD')}`}/> */}
+                <ul>
+                    {
+                        dataSource.map(data => <li key={data.title} style={{
+                            background: `#${data.color}`,
+                            listStyle: 'none'
+                        }}>{data.title}</li>)
+                    }
+                </ul>
                 <Calendar
                     onSelect={this.onSelect}
                     onPanelChange={this.onPanelChange}
