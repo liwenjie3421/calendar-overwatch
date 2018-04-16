@@ -12,13 +12,15 @@ export default class Serach extends React.Component {
     }
 
     componentWillMount() {
-        this.post();
+        this.getData();
     }
 
-    post(date=moment()) {
-        return axios.post(`${domain}/calendarInfo`, {
-            monthPicker : date.format('YYYY-MM-01'),
-            type: 'get'
+    getData(date=moment()) {
+        return axios.get(`${domain}/api/calendarInfo`, {
+            params: {
+                startDate : date.format('YYYY-MM-01'),
+                endDate: date.format(`YYYY-MM-${date.daysInMonth()}`)
+            }
         }).then(v => {
             const {status, data} = v;
             if (status === 200 && data && data.content) {
@@ -39,7 +41,7 @@ export default class Serach extends React.Component {
             return;
         }
 
-        this.post(date);
+        this.getData(date);
     }
 
     dateCellRender = (value) => {
