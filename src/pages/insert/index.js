@@ -1,6 +1,7 @@
 import React from 'react';
 import { Input, Button, Col, Row, DatePicker, message, Select } from 'antd';
 import axios from 'axios';
+import moment from 'moment'
 import {domain} from '../../config';
 
 const { MonthPicker } = DatePicker;
@@ -19,16 +20,25 @@ export default class Insert extends React.Component {
     }
 
     handleClick() {
-        const {start: monthPicker, tutorInfo, input: info} = this.state;
-        if (!(monthPicker && tutorInfo && info)) {
+        let {start: date, tutorInfo, input: info} = this.state;
+        if (!(date && tutorInfo && info)) {
             message.warning('有值为空');
             return;
         }
+        const days = moment(date).daysInMonth();
+        if (days !== info.length) {
+            message.warning('日期不符');
+            return;
+        }
+
+        info = info.map((item, index) => {
+            item.teacher = tutorInfo[item.color] || '未知';
+            item.date = moment(date.replace('-01', `-${index+1}`)).format('YYYY-MM-DD');
+            return item;
+        });
         axios.post(`${domain}/api/calendarInfo`, {
-            monthPicker,
-            type: 'save',
-            info,
-            tutorInfo: tutorInfo.split('\n')
+            batch: true,
+            batchData: info
         }).then(v=>{
             const {status, data} = v;
             if(status === 200 && data && data.content) {
@@ -82,7 +92,7 @@ export default class Insert extends React.Component {
             if (node.style.backgroundColor) {
                 obj.color = this.rgb216(node.style.backgroundColor);
             }
-            obj.item = ((node.getElementsByTagName('font')[0] || {}).innerText || '').trim();
+            obj.event = ((node.getElementsByTagName('font')[0] || {}).innerText || '').trim();
             input.push(obj);
         } 
         console.log(input);
@@ -95,7 +105,7 @@ export default class Insert extends React.Component {
             <div>
                 <Row>
                     <Col span={6}>
-                        导师以及对应颜色(:分割，比如：赵晓波: #ffffff)
+                        导师以及对应颜色(:分割，比如： #dddddd:赵晓波)
                     </Col>
                     <Col span={18}>
                     <Select
@@ -125,8 +135,8 @@ export default class Insert extends React.Component {
                             Object.keys(this.state.tutorInfo).map((item, index) => {
                                 return (
                                     <div key={index}>
-                                        <div style={{display: 'inline-block'}}>{item}</div>
-                                        <span style={{width: 15, height: 15, display: 'inline-block', backgroundColor: this.state.tutorInfo[item]}} />
+                                        <div style={{display: 'inline-block'}}>{this.state.tutorInfo[item]}</div>
+                                        <span style={{width: 15, height: 15, display: 'inline-block', backgroundColor: item}} />
                                     </div>
                                 )
                             })
@@ -142,7 +152,7 @@ export default class Insert extends React.Component {
                     <Col span={18}>
                         {
                             this.state.input.map((item, index) => {
-                                return <span style={{display:'inline-block', border: '1px solid #ccc', backgroundColor: item.color}} key={index}>{item.item}:{item.color}</span>
+                                return <span style={{display:'inline-block', border: '1px solid #ccc', backgroundColor: item.color}} key={index}>{item.event}:{item.color}</span>
                             })
                         }
                         {/* <TextArea type="text" disabled value={(()=>{
