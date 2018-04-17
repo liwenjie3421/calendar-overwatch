@@ -1,5 +1,5 @@
 import React from 'react';
-import { Input, Button, Col, Row, DatePicker, message } from 'antd';
+import { Input, Button, Col, Row, DatePicker, message, Select } from 'antd';
 import axios from 'axios';
 import {domain} from '../../config';
 
@@ -9,7 +9,8 @@ export default class Insert extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            input: []
+            input: [],
+            tutorInfo: {}
         };
     }
 
@@ -23,7 +24,7 @@ export default class Insert extends React.Component {
             message.warning('有值为空');
             return;
         }
-        axios.post(`${domain}/calendarInfo`, {
+        axios.post(`${domain}/api/calendarInfo`, {
             monthPicker,
             type: 'save',
             info,
@@ -49,35 +50,13 @@ export default class Insert extends React.Component {
         });
     }
 
-    handlePasteTutorInfo = (e) => {
-        const dom = e.clipboardData.getData('text/html');
-        const container = document.createElement('div');
-        container.innerHTML = dom;
-        let obj = {
-            name: '',
-            color: ''
-        };
-        const trs = Array.from(container.getElementsByTagName('tr'));
-        let tutorInfo = '';
-        if (!trs.length) {
-            message.warning('请多选择该导师的排班以确定颜色，并确保第一列为导师姓名列');
-            return;
-        }
-        for (let index = 0; index < trs.length; index++) {
-            const nodes = trs[index].getElementsByTagName('td');
-            const name = ((nodes[0].getElementsByTagName('font')[0] || {}).innerText || '').trim();
-            obj.name = name;
-            for (let index = 0; index < nodes.length; index++) {
-                const node = nodes[index];
-                if (node.style.backgroundColor) {
-                    obj.color = node.style.backgroundColor;
-                    break;
-                }
-            }   
-            if(obj.name && obj.color) {
-                tutorInfo += `${obj.name}:${obj.color}\n`;
-            }
-        }
+    handleChangeTutorInfo = (infos) => {
+        const tutorInfo = {};
+        infos.map(item=>{
+            const itemObj = item.split(':');
+            tutorInfo[itemObj[0]] = itemObj[1];
+        })
+        console.log(tutorInfo);
         this.setState({
             tutorInfo
         });
@@ -98,6 +77,7 @@ export default class Insert extends React.Component {
             obj.item = ((node.getElementsByTagName('font')[0] || {}).innerText || '').trim();
             input.push(obj);
         } 
+        console.log(input);
         this.setState({
             input
         });
@@ -107,10 +87,15 @@ export default class Insert extends React.Component {
             <div>
                 <Row>
                     <Col span={6}>
-                        paste导师
+                        导师以及对应颜色(:分割，比如：赵晓波: #ffffff)
                     </Col>
                     <Col span={18}>
-                        <TextArea  rows={4} onPaste={this.handlePasteTutorInfo}/>
+                    <Select
+                        mode="tags"
+                        style={{ width: '100%' }}
+                        onChange={this.handleChangeTutorInfo}
+                        tokenSeparators={[',']}
+                    />
                     </Col>
                 </Row>
                 <br/>
@@ -128,7 +113,17 @@ export default class Insert extends React.Component {
                         导师名字以及颜色：
                     </Col>
                     <Col span={18}>
-                        <TextArea type="text" rows="6" disabled value={this.state.tutorInfo}/>
+                        {
+                            Object.keys(this.state.tutorInfo).map((item, index) => {
+                                return (
+                                    <div key={index}>
+                                        <div style={{display: 'inline-block'}}>{item}</div>
+                                        <span style={{width: 15, height: 15, display: 'inline-block', backgroundColor: this.state.tutorInfo[item]}} />
+                                    </div>
+                                )
+                            })
+                        }
+                        <div></div>
                     </Col>
                 </Row>
                 <br/>
