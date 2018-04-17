@@ -62,6 +62,14 @@ export default class Insert extends React.Component {
         });
     }
 
+    rgb216(rgb) {
+        const colors = rgb.match(/rgb\((.*)\)/)[1].split(',');
+        return `#${colors.map(color => {
+            const r = Number(color).toString(16);
+            return (r.length <= 1) ? ('0' + r) : r;
+        }).join('')}`;
+    }
+
     handlePasteInfo = (e) => {
         const dom = e.clipboardData.getData('text/html');
         const container = document.createElement('div');
@@ -72,7 +80,7 @@ export default class Insert extends React.Component {
             const node = nodes[index];
             const obj = {};
             if (node.style.backgroundColor) {
-                obj.color = node.style.backgroundColor;
+                obj.color = this.rgb216(node.style.backgroundColor);
             }
             obj.item = ((node.getElementsByTagName('font')[0] || {}).innerText || '').trim();
             input.push(obj);
@@ -132,13 +140,18 @@ export default class Insert extends React.Component {
                         排班：
                     </Col>
                     <Col span={18}>
-                        <TextArea type="text" disabled value={(()=>{
+                        {
+                            this.state.input.map((item, index) => {
+                                return <span style={{display:'inline-block', border: '1px solid #ccc', backgroundColor: item.color}} key={index}>{item.item}:{item.color}</span>
+                            })
+                        }
+                        {/* <TextArea type="text" disabled value={(()=>{
                             let r = '';
                             this.state.input.map(v => {
                                 r += `${v.item}:${v.color}  `;
                             })
                             return r;
-                        })()}/>
+                        })()}/> */}
                     </Col>
                 </Row>
                 <br/>
