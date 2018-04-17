@@ -8,7 +8,7 @@ export default class Serach extends React.Component {
     constructor(props) {
         super(props);
 
-        this.state = {};
+        this.state = {daysArr:[]};
     }
 
     componentWillMount() {
@@ -23,13 +23,9 @@ export default class Serach extends React.Component {
             }
         }).then(v => {
             const {status, data} = v;
-            if (status === 200 && data && data.content) {
-                const {info: daysArr, tutorMap} = data.content;
-                const daysNum = date.daysInMonth();
+            if (status === 200 && data && data.code === 1 && data.msg) {
                 this.setState({
-                    tutorMap,
-                    daysNum,
-                    daysArr,
+                    daysArr: data.msg,
                     month: date.month()
                 });
             }
@@ -45,41 +41,35 @@ export default class Serach extends React.Component {
     }
 
     dateCellRender = (value) => {
-        if(value.month() === this.state.month) {
-            const obj = this.state.daysArr[value.date()-1];
-            const {color, item} = obj;
-            return (
-                <div style={{
-                    background: `#${color}`,
-                    width: '80%',
-                    height: '80%'
-                }}>
-                    {item}
-                </div>
-            );
+        // console.log(value)
+        const {month, daysArr} = this.state;
+        if(value.month() === month) {
+            for (let index = 0; index < daysArr.length; index++) {
+                const dayData = daysArr[index];
+                if(value.format('YYYY-MM-DD') === dayData.date) {
+                    return (
+                        <div style={{
+                            background: dayData.color,
+                            width: '80%',
+                            height: '80%'
+                        }}>
+                            <div>
+                                {dayData.event}班 
+                            </div>
+                            <div>
+                                老师：{dayData.teacher}
+                            </div>
+                        </div>
+                    );
+                }
+            }
         }
+        return <div />
     }
 
     render() {
-        const {tutorMap} = this.state;
-        const dataSource = [];
-        for(let color in tutorMap) {
-            const title = tutorMap[color];
-            dataSource.push({
-                title,
-                color
-            })
-        }
         return (
             <div>
-                <ul>
-                    {
-                        dataSource.map(data => <li key={data.title} style={{
-                            background: `#${data.color}`,
-                            listStyle: 'none'
-                        }}>{data.title}</li>)
-                    }
-                </ul>
                 <Calendar
                     onSelect={this.onSelect}
                     onPanelChange={this.onPanelChange}
